@@ -5,8 +5,11 @@ import {
   HttpLink,
   InMemoryCache,
 } from '@apollo/client'
+import { createUploadLink } from 'apollo-upload-client'
 
 const httpLink = new HttpLink({ uri: 'http://localhost:3000/graphql' })
+
+const uploadLink = createUploadLink({ uri: 'http://localhost:3000/graphql' })
 
 const authMiddleware = new ApolloLink((operation, forward) => {
   // add the authorization to the headers
@@ -19,6 +22,7 @@ const authMiddleware = new ApolloLink((operation, forward) => {
     headers: {
       ...headers,
       authorization,
+      'Apollo-Require-Preflight': 'true', // for upload file
     },
   }))
 
@@ -26,6 +30,6 @@ const authMiddleware = new ApolloLink((operation, forward) => {
 })
 
 export const client = new ApolloClient({
-  link: from([authMiddleware, httpLink]),
+  link: from([authMiddleware, uploadLink]),
   cache: new InMemoryCache(),
 })

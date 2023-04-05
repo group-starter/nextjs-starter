@@ -16,3 +16,11 @@ export const GET_ME = gql`
     }
   }
 `
+
+export const SINGLE_UPLOAD = gql`
+  mutation singleUpload($file: Upload!) {
+    singleUpload(file: $file) {
+      filename
+    }
+  }
+`
