@@ -1,4 +1,4 @@
-import LayoutFull from '@/components/layouts/layoutFull'
+import LayoutFull from '@/components/layouts/layoutFull/layoutFull'
 import { NextPageWithLayout } from '@/pages/_app'
 import { Button, Checkbox, Form, Input } from 'antd'
 import type { ReactElement } from 'react'

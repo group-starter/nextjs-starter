@@ -2,9 +2,57 @@ import Head from 'next/head'
 import Image from 'next/image'
 import styles from '@/styles/Home.module.css'
 import { Inter } from 'next/font/google'
+import { useEffect } from 'react'
+import jwt from 'jsonwebtoken'
+
 const inter = Inter({ subsets: ['latin'] })
 
+declare global {
+  interface Window {
+    google: any
+    gapi: any
+  }
+}
+
 const Home = () => {
+  const handleCredentialResponse = (args: { credential: string }) => {
+    const userInfoGG = jwt.decode(args.credential)
+    console.log({
+      userInfoGG,
+      args
+    })
+  }
+
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      window.google.accounts.id.initialize({
+        client_id: '670564527719-nvgcomg70ej1nu4jtfbedur97gleg1au.apps.googleusercontent.com',
+        callback: handleCredentialResponse
+      })
+      window.google.accounts.id.prompt(); // also display the One Tap dialog
+
+      const client = window.google.accounts.oauth2.initTokenClient({
+        client_id: '670564527719-nvgcomg70ej1nu4jtfbedur97gleg1au.apps.googleusercontent.com',
+        scope: 'https://www.googleapis.com/auth/userinfo.profile',
+        callback: (tokenResponse: any) => {
+          console.log(tokenResponse)
+
+          var xhr = new XMLHttpRequest();
+          xhr.onreadystatechange = function() {
+              if (xhr.readyState == XMLHttpRequest.DONE) {
+                  alert(xhr.responseText);
+              }
+          }
+          xhr.open('GET', 'https://www.googleapis.com/auth/userinfo.profile');
+          xhr.setRequestHeader('Authorization', 'Bearer ' + tokenResponse.access_token);
+          xhr.send();
+        },
+      });
+      client.requestAccessToken()
+    }
+  }, [])
+
   return (
     <>
       <Head>
