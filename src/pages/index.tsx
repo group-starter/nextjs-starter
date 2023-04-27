@@ -11,6 +11,7 @@ declare global {
   interface Window {
     google: any
     gapi: any
+    grecaptcha: any
   }
 }
 
@@ -23,33 +24,59 @@ const Home = () => {
     })
   }
 
+  const verifyCallback = (token: string) => {
+    console.log(token)
+  }
+
+  // not have params
+  const expiredCallback = () => {
+    console.log('expired')
+  }
+
+  const errorCallback = () => {
+    console.log('error')
+  }
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      window.google.accounts.id.initialize({
-        client_id: '670564527719-nvgcomg70ej1nu4jtfbedur97gleg1au.apps.googleusercontent.com',
-        callback: handleCredentialResponse
-      })
-      window.google.accounts.id.prompt(); // also display the One Tap dialog
+      // window.google.accounts.id.initialize({
+      //   client_id: '670564527719-nvgcomg70ej1nu4jtfbedur97gleg1au.apps.googleusercontent.com',
+      //   callback: handleCredentialResponse
+      // })
+      // window.google.accounts.id.renderButton(
+      //   document.getElementById("buttonDiv"),
+      //   { theme: "outline", size: "large" }  // customization attributes
+      // );
+      // window.google.accounts.id.prompt(); // also display the One Tap dialog
 
-      const client = window.google.accounts.oauth2.initTokenClient({
-        client_id: '670564527719-nvgcomg70ej1nu4jtfbedur97gleg1au.apps.googleusercontent.com',
-        scope: 'https://www.googleapis.com/auth/userinfo.profile',
-        callback: (tokenResponse: any) => {
-          console.log(tokenResponse)
+      try {
+          window.grecaptcha.render("test", {
+            sitekey: "6LcU_78lAAAAAHV7GRpa5CUbSXAaAwv6H5wf_vuR",
+            callback: verifyCallback,
+            'expired-callback': expiredCallback,
+            'error-callback': errorCallback,
+          })
+      } catch(err) {
+        console.log(err)
+      }
+      // const client = window.google.accounts.oauth2.initTokenClient({
+      //   client_id: '670564527719-nvgcomg70ej1nu4jtfbedur97gleg1au.apps.googleusercontent.com',
+      //   scope: 'https://www.googleapis.com/auth/userinfo.profile',
+      //   callback: (tokenResponse: any) => {
+      //     console.log(tokenResponse)
 
-          var xhr = new XMLHttpRequest();
-          xhr.onreadystatechange = function() {
-              if (xhr.readyState == XMLHttpRequest.DONE) {
-                  alert(xhr.responseText);
-              }
-          }
-          xhr.open('GET', 'https://www.googleapis.com/auth/userinfo.profile');
-          xhr.setRequestHeader('Authorization', 'Bearer ' + tokenResponse.access_token);
-          xhr.send();
-        },
-      });
-      client.requestAccessToken()
+      //     var xhr = new XMLHttpRequest();
+      //     xhr.onreadystatechange = function() {
+      //         if (xhr.readyState == XMLHttpRequest.DONE) {
+      //             alert(xhr.responseText);
+      //         }
+      //     }
+      //     xhr.open('GET', 'https://www.googleapis.com/auth/userinfo.profile');
+      //     xhr.setRequestHeader('Authorization', 'Bearer ' + tokenResponse.access_token);
+      //     xhr.send();
+      //   },
+      // });
+      // client.requestAccessToken()
     }
   }, [])
 
@@ -67,6 +94,8 @@ const Home = () => {
             Get started by editing&nbsp;
             <code className={styles.code}>src/pages/index.tsx</code>
           </p>
+          <div id="buttonDiv">buttonDiv</div>
+          <div id="test">Submit</div>
           <div>
             <a
               href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
